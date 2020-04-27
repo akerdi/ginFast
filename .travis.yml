@@ -7,6 +7,12 @@ env: GO111MODULE=on
 go:
   - 1.13.x
 
+sudo: required
+
+os:
+  - linux
+  - osx
+
 git:
   depth: 1
 
@@ -15,9 +21,5 @@ install: true
 notifications:
   email: false
 
-before_script:
-  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOPATH/bin v1.23.1
-
 script:
-  - golangci-lint run
   - ./build.sh
