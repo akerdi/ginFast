@@ -19,3 +19,8 @@ build
 .idea
 .vscode
 
+/public
+/packages
+/staticBuilds
+docker-compose.yml
+config.go
