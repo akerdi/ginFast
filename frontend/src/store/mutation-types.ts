@@ -1,0 +1,5 @@
+export const USER_INFO = 'USER_INFO'
+export const USER_CHECK = 'USER_CHECK'
+export const USER_SIGNIN = 'USER_SIGNIN'
+export const USER_SIGNOUT = 'USER_SIGNOUT'
+export const RBAC_INFO = 'RBAC_INFO'
