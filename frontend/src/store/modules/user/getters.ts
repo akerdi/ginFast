@@ -1,4 +1,3 @@
-
 const isLoggedIn = (user) => {
   return user.roles && user.roles.length > 0
 }
@@ -21,7 +20,7 @@ const hasRole = (user, roleName?) => {
 }
 
 const isAdmin = (user) => {
-  return hasRole('admin')
+  return hasRole(user, 'admin')
 }
 
 export default {

@@ -4,6 +4,7 @@ import { Message } from 'element-ui'
 import Store from '@/store'
 import { USER_SIGNOUT } from '@/store/mutation-types'
 import router from '../router'
+
 axios.defaults.timeout = 5000
 
 // development 本地转发
@@ -34,7 +35,8 @@ axios.interceptors.response.use(
         case 403:
           if (error.response.data === 'Login Required') {
             Store.commit('user/' + USER_SIGNOUT)
-            if ((router as any).history.current.path !== '/') router.push({ name: 'login' })
+            const _router = router as any
+            if (_router.history.current.path !== '/') router.push({ name: 'login' })
           }
       }
     }

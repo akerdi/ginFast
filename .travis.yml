@@ -23,6 +23,7 @@ before_install:
   - ls ../
   - ls .
   - npm -v
+  - echo "DOCEKR_USER:$DOCKER_USER"
 
 install: true
 
