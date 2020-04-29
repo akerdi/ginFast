@@ -26,4 +26,4 @@ notifications:
   email: false
 
 script:
-  - ./build.sh
+  - .travis/build.sh
