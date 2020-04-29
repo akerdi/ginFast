@@ -17,7 +17,6 @@ os:
 
 branches:
   only:
-    - dev
     - master
     - stable
 
