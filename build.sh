@@ -19,7 +19,7 @@ RUN_IN "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o staticBuilds/ginFast_l
 PRINT "complete pack backend"
 
 PRINT "start build & copy frontend to public\n"
-RUN_IN "yarn build && cp -r dist ../public" "frontend"
+RUN_IN "npm run build && cp -r dist ../public" "frontend"
 PRINT "end build & copy frontend to public"
 
 PRINT "material all done\n"
