@@ -12,6 +12,11 @@ sudo: required
 os:
   - osx
 
+branches:
+  only:
+    - master
+    - stable
+
 before_install:
   - chmod +x build.sh
   - git clone https://github.com/shaohung001/ginFastApp.git ../ginFastApp
