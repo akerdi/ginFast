@@ -14,7 +14,7 @@ os:
 
 before_install:
   - chmod +x build.sh
-  - git clone git@github.com:shaohung001/ginFastApp.git /go/src/github.com/shaohung001/ginFastApp
+  - git clone git@github.com:shaohung001/ginFastApp.git ../ginFastApp
 
 install: true
 
