@@ -13,10 +13,11 @@ services:
   - docker
 
 os:
-  - osx
+  - linux
 
 branches:
   only:
+    - dev
     - master
     - stable
 
