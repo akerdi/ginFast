@@ -17,6 +17,7 @@ before_install:
   - git clone https://github.com/shaohung001/ginFastApp.git ../ginFastApp
   - ls ../
   - ls .
+  - npm -v
 
 install: true
 
