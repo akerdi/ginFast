@@ -34,6 +34,7 @@ export default Vue.extend({
         this.USER_SIGNOUT()
         this.$router.push({ name: 'login' })
       } catch (error) {
+        console.log("error")
       }
     }
   }
