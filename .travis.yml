@@ -14,11 +14,7 @@ os:
   - osx
 
 before_install:
-  - echo "\n\nmachine github.com\n"
-  - git clone https://github.com/shaohung001/ginFastApp
-
-git:
-  depth: 1
+  - go get github.com/shaohung001/ginFastApp
 
 install: true
 
