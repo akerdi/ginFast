@@ -9,6 +9,9 @@ go:
 
 sudo: required
 
+services:
+  - docker
+
 os:
   - osx
 
