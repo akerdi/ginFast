@@ -1,17 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"ginFast/src"
 	"github.com/shaohung001/ginFastApp"
 	"log"
 )
 
 func main() {
-	fmt.Println("????????", ginFastApp.InitApp())
-	
-	fmt.Println("kkkkkk" , ginFastApp.AhuangName())
-	err := ginFastApp.Start(ginFastApp.Init(), ":9300")
+	src.InitConfig()
+	app := ginFastApp.New(src.ConfigData)
+	_, err := app.Start()
 	if err != nil {
-		log.Fatal("????", err)
+		log.Fatalf("start app fail: %s", err)
 	}
 }

@@ -23,4 +23,4 @@ build
 /packages
 /staticBuilds
 docker-compose.yml
-config.go
+src/config.go
