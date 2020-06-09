@@ -13,7 +13,7 @@ services:
   - docker
 
 os:
-  - osx
+  - linux
 
 branches:
   only:
