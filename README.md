@@ -34,7 +34,7 @@ app := ginFastApp.New(&Config{...})
 err := app.Start()
 ```
 
-以上即启动服务器。还可先ConnectDB, Config.getDB()有相应配置即可:
+以上即启动服务器。还可先ConnectDB, 实现接口方法IConfig.getDB()相应配置即可:
 
 ```go
 app.ConnectDB(func(db *gorm.DB, err error) {
