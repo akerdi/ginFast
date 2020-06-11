@@ -12,7 +12,7 @@ import (
 func main() {
 	config.InitConfig()
 	app := ginFastApp.New(config.ConfigData)
-	app.AddRoutes(routes.PublicRoutes)
+	applyRoutes(app)
 	app.ConnectDB(func(db *gorm.DB, err error) {
 		if err != nil {
 			panic(err)
@@ -28,4 +28,10 @@ func main() {
 		}
 	})
 	
+}
+
+func applyRoutes(app *ginFastApp.App) {
+	for _, route := range routes.PublicRoutes {
+		app.AddRoutes(route)
+	}
 }

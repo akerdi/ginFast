@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var PublicRoutes = []Route{
+var PublicRoutes = []*Route{
 	{
 		Path: "/api/aa",
 		Method: "POST",
