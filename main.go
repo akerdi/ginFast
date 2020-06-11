@@ -32,6 +32,6 @@ func main() {
 
 func applyRoutes(app *ginFastApp.App) {
 	for _, route := range routes.PublicRoutes {
-		app.AddRoutes(route)
+		app.AddRoute(route)
 	}
 }
