@@ -3,6 +3,7 @@ package db
 import (
 	"ginFast/src/db/schema"
 	"github.com/jinzhu/gorm"
+	"github.com/shaohung001/ginFastApp"
 )
 
 func SetupTables(db *gorm.DB) error {
@@ -12,4 +13,10 @@ func SetupTables(db *gorm.DB) error {
 		}
 	}
 	return  nil
+}
+
+var RedisConnect *ginFastApp.RedisClient
+
+func SetupRedis(redisConnect *ginFastApp.RedisClient)  {
+	RedisConnect = redisConnect
 }

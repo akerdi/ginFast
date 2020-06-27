@@ -9,10 +9,15 @@ import (
 	"log"
 )
 
+var App *ginFastApp.App
 func main() {
 	config.InitConfig()
-	app := ginFastApp.New(config.ConfigData)
-	applyRoutes(app)
+	App = ginFastApp.New(config.ConfigData)
+	applyRoutes(App)
+	connectDB(App)
+}
+
+func connectDB(app *ginFastApp.App)  {
 	app.ConnectDB(func(db *gorm.DB, err error) {
 		if err != nil {
 			panic(err)
@@ -21,13 +26,24 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		
-		_, err = app.Start()
-		if err != nil {
-			log.Fatalf("start app fail: %s", err)
-		}
+		connectRedis(app)
 	})
-	
+}
+
+func connectRedis(app *ginFastApp.App)  {
+	app.ConnectRedis(func(redisClient *ginFastApp.RedisClient, err error) {
+		if err != nil {
+			panic(err)
+		}
+		startApp(app)
+	})
+}
+
+func startApp(app *ginFastApp.App)  {
+	_, err := app.Start()
+	if err != nil {
+		log.Fatalf("start app fail: %s", err)
+	}
 }
 
 func applyRoutes(app *ginFastApp.App) {

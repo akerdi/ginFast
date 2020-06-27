@@ -60,19 +60,26 @@ func (config *Config) GetRedis() map[string]interface{} {
 
 
 func InitConfig() (*Config, error) {
-	//DB_PWD=123456;DB_NAME=novel;DB_PORT=3306;DB_HOST=127.0.0.1;DB_USER=root
+	db := DBConfig{
+		Name:     "novel",
+		Host:     "127.0.0.1",
+		Port:     3306,
+		Username: "root",
+		Password: "123456",
+	}
+	redis := RedisConfig{
+		Host: "127.0.0.1",
+		Port: 6379,
+		Pass: "",
+		DBIndex: 10,
+	}
+	fmt.Printf("db: %v  redis: %v", db, redis)
 	config := &Config{
 		DEBUG: false,
 		Port:  10000,
 		Host:  "",
-		DB:    &DBConfig{
-			Name:     "novel",
-			Host:     "127.0.0.1",
-			Port:     3306,
-			Username: "root",
-			Password: "123456",
-		},
-		Redis:  &RedisConfig{},
+		DB:    &db,
+		Redis:  &redis,
 	}
 	var key string
 	if key = os.Getenv("DEBUG"); key != "" {
