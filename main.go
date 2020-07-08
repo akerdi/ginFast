@@ -1,15 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"ginFast/src/config"
 	ginFastDB "ginFast/src/db"
+	"ginFast/src/db/entity/email"
 	"ginFast/src/routes"
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/jinzhu/gorm"
 	"github.com/shaohung001/ginFastApp"
-	"log"
+	"gopkg.in/go-playground/validator.v8"
 )
 
 var App *ginFastApp.App
+
 func main() {
 	config.InitConfig()
 	App = ginFastApp.New(config.ConfigData)
@@ -17,7 +24,7 @@ func main() {
 	connectDB(App)
 }
 
-func connectDB(app *ginFastApp.App)  {
+func connectDB(app *ginFastApp.App) {
 	app.ConnectDB(func(db *gorm.DB, err error) {
 		if err != nil {
 			panic(err)
@@ -26,28 +33,34 @@ func connectDB(app *ginFastApp.App)  {
 		if err != nil {
 			panic(err)
 		}
-		connectRedis(app)
+
+		engine, err := app.Start()
+		bindValidator()
+		startEngine(engine)
 	})
 }
 
-func connectRedis(app *ginFastApp.App)  {
-	app.ConnectRedis(func(redisClient *ginFastApp.RedisClient, err error) {
-		if err != nil {
-			panic(err)
-		}
-		startApp(app)
-	})
-}
-
-func startApp(app *ginFastApp.App)  {
-	_, err := app.Start()
+func startEngine(engine *gin.Engine) {
+	port := config.ConfigData.Port
+	portStr := fmt.Sprintf(":%d", port)
+	err := engine.Run(portStr)
 	if err != nil {
-		log.Fatalf("start app fail: %s", err)
+		log.Fatalf("server run port: %d error: %s", port, err)
 	}
+	fmt.Println("server is starting now! port : ", port)
 }
 
 func applyRoutes(app *ginFastApp.App) {
 	for _, route := range routes.PublicRoutes {
 		app.AddRoute(route)
+	}
+}
+
+func bindValidator() {
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		err := v.RegisterValidation("EmailValid", email.EmailValid)
+		if err != nil {
+			log.Println("bindValidator err: ", err)
+		}
 	}
 }

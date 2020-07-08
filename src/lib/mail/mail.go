@@ -25,8 +25,8 @@ func SendMail_QQ(to []string, subject, body string) error {
 const (
 	HOST        = "smtp.163.com"
 	SERVER_ADDR = "smtp.163.com:25"
-	USER        = "18516636217@163.com"
-	PASSWORD    = ""
+	USER = "18516636217@163.com"
+	PASSWORD = ""
 )
 
 type Email struct {
