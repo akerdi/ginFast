@@ -9,24 +9,30 @@ import (
 )
 
 type DBConfig struct {
-	Name string	`json:"name"`
-	Host string	`json:"host"`
-	Port int	`json:"port"`
-	Username string	`json:"username"`
-	Password string	`json:"password"`
+	Name     string `json:"name"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 type RedisConfig struct {
-	Host string	`json:"host"`
-	Port int	`json:"port"`
-	Pass string	`json:"pass"`
-	DBIndex int	`json:"db_index"`
+	Host    string `json:"host"`
+	Port    int    `json:"port"`
+	Pass    string `json:"pass"`
+	DBIndex int    `json:"db_index"`
+}
+type QQMail struct {
+	Token    string
+	Sender   string
+	Nickname string // 发送者
 }
 type Config struct {
-	DEBUG bool
-	Port int
-	Host string
-	DB *DBConfig
-	Redis *RedisConfig
+	DEBUG  bool
+	Port   int
+	Host   string
+	DB     *DBConfig
+	Redis  *RedisConfig
+	QQMail *QQMail
 }
 
 var ConfigData *Config
@@ -55,9 +61,8 @@ func (config *Config) GetRedis() map[string]interface{} {
 	if err = json.Unmarshal(data, &m); err != nil {
 		log.Fatalf("Config.getDB []byte 2 map err: %s", err)
 	}
-	return  m
+	return m
 }
-
 
 func InitConfig() (*Config, error) {
 	db := DBConfig{
@@ -68,9 +73,9 @@ func InitConfig() (*Config, error) {
 		Password: "123456",
 	}
 	redis := RedisConfig{
-		Host: "127.0.0.1",
-		Port: 6379,
-		Pass: "",
+		Host:    "127.0.0.1",
+		Port:    6379,
+		Pass:    "",
 		DBIndex: 10,
 	}
 	fmt.Printf("db: %v  redis: %v", db, redis)
@@ -78,61 +83,80 @@ func InitConfig() (*Config, error) {
 		DEBUG: false,
 		Port:  10000,
 		Host:  "",
-		DB:    &db,
-		Redis:  &redis,
+		DB: &DBConfig{
+			Name:     "novel",
+			Host:     "127.0.0.1",
+			Port:     3306,
+			Username: "root",
+			Password: "123456",
+		},
+		Redis: &RedisConfig{},
+		QQMail: &QQMail{
+			Token:    "",
+			Sender:   "767838865@qq.com",
+			Nickname: "aker",
+		},
 	}
-	var key string
-	if key = os.Getenv("DEBUG"); key != "" {
-		if b, err := strconv.ParseBool(key); err == nil {
+	var value string
+	if value = os.Getenv("DEBUG"); value != "" {
+		if b, err := strconv.ParseBool(value); err == nil {
 			config.DEBUG = b
 		}
 	}
-	if key = os.Getenv("HOST"); key != "" {
-		config.Host = key
+	if value = os.Getenv("HOST"); value != "" {
+		config.Host = value
 	}
-	if key = os.Getenv("PORT"); key != "" {
-		if i, err := strconv.Atoi(key); err == nil {
+	if value = os.Getenv("PORT"); value != "" {
+		if i, err := strconv.Atoi(value); err == nil {
 			config.Port = i
 		}
 	}
 	// mongo
-	if key = os.Getenv("DB_HOST"); key != "" {
-		config.DB.Host = key
+	if value = os.Getenv("DB_HOST"); value != "" {
+		config.DB.Host = value
 	}
-	if key = os.Getenv("DB_PORT"); key != "" {
-		if i, err := strconv.Atoi(key); err == nil {
+	if value = os.Getenv("DB_PORT"); value != "" {
+		if i, err := strconv.Atoi(value); err == nil {
 			config.DB.Port = i
 		}
 	}
-	if key = os.Getenv("DB_USER"); key != "" {
-		config.DB.Username = key
+	if value = os.Getenv("DB_USER"); value != "" {
+		config.DB.Username = value
 	}
-	if key = os.Getenv("DB_PWD"); key != "" {
-		config.DB.Password = key
+	if value = os.Getenv("DB_PWD"); value != "" {
+		config.DB.Password = value
 	}
-	if key = os.Getenv("DB_NAME"); key != "" {
-		config.DB.Name = key
+	if value = os.Getenv("DB_NAME"); value != "" {
+		config.DB.Name = value
 	}
 	// redis
-	if key = os.Getenv("REDIS_HOST"); key != "" {
-		config.Redis.Host = key
+	if value = os.Getenv("REDIS_HOST"); value != "" {
+		config.Redis.Host = value
 	}
-	if key = os.Getenv("REDIS_PORT"); key != "" {
-		if i, err := strconv.Atoi(key); err == nil {
+	if value = os.Getenv("REDIS_PORT"); value != "" {
+		if i, err := strconv.Atoi(value); err == nil {
 			config.Redis.Port = i
 		}
 	}
-	if key = os.Getenv("REDIS_PWD"); key != "" {
-		config.Redis.Pass = key
+	if value = os.Getenv("REDIS_PWD"); value != "" {
+		config.Redis.Pass = value
 	}
-	if key = os.Getenv("REDIS_DB"); key != "" {
-		if i, err := strconv.Atoi(key); err == nil {
+	if value = os.Getenv("REDIS_DB"); value != "" {
+		if i, err := strconv.Atoi(value); err == nil {
 			config.Redis.DBIndex = i
 		}
 	}
-	
+	if value = os.Getenv("QQ_MAIL_TOKEN"); value != "" {
+		config.QQMail.Token = value
+	}
+	if value = os.Getenv("QQ_MAIL_SENDER"); value != "" {
+		config.QQMail.Sender = value
+	}
+	if value = os.Getenv("QQ_MAIL_NICKNAME"); value != "" {
+		config.QQMail.Nickname = value
+	}
+
 	ConfigData = config
 	fmt.Println("ConfigData:", ConfigData)
 	return config, nil
 }
-

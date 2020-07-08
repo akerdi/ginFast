@@ -13,4 +13,11 @@ var PublicRoutes = []*Route{
 			services.AA(),
 		},
 	},
+	{
+		Path: "/api/sendMail",
+		Method: "POST",
+		Middles: []gin.HandlerFunc{
+			services.SendMail(),
+		},
+	},
 }
