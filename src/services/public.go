@@ -1,7 +1,7 @@
 package services
 
 import (
-	"ginFast/src/db/entity/email"
+	"ginFast/src/routes/validate/email"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"ginFast/src/config"
 	ginFastDB "ginFast/src/db"
-	"ginFast/src/db/entity/email"
 	"ginFast/src/routes"
+	customValidate "ginFast/src/routes/validate"
+	"github.com/gin-gonic/gin/binding"
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/jinzhu/gorm"
 	"github.com/shaohung001/ginFastApp"
-	"gopkg.in/go-playground/validator.v8"
 )
 
 var App *ginFastApp.App
@@ -57,10 +56,11 @@ func applyRoutes(app *ginFastApp.App) {
 }
 
 func bindValidator() {
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		err := v.RegisterValidation("EmailValid", email.EmailValid)
-		if err != nil {
-			log.Println("bindValidator err: ", err)
-		}
-	}
+	binding.Validator = new(customValidate.DefaultValidator)
+	//if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+	//	err := v.RegisterValidation("EmailValid", email.EmailValid)
+	//	if err != nil {
+	//		log.Println("bindValidator err: ", err)
+	//	}
+	//}
 }
