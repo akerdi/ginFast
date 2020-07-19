@@ -8,6 +8,7 @@ import (
 	customValidate "ginFast/src/routes/validate"
 	"github.com/gin-gonic/gin/binding"
 	"log"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -17,10 +18,18 @@ import (
 var App *ginFastApp.App
 
 func main() {
+	testFunc()
 	config.InitConfig()
 	App = ginFastApp.New(config.ConfigData)
 	applyRoutes(App)
 	connectDB(App)
+}
+
+func testFunc() {
+	b := []byte("7683242@163.com")
+	pat := `@qq.com$|@163.com`
+	reg1 := regexp.MustCompile(pat)
+	fmt.Printf("regexp:  %v \n\n", reg1.Match(b))
 }
 
 func connectDB(app *ginFastApp.App) {

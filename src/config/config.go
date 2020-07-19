@@ -32,7 +32,8 @@ type Config struct {
 	Host   string
 	DB     *DBConfig
 	Redis  *RedisConfig
-	QQMail *QQMail
+	MailQQ *QQMail
+	Mail163 *QQMail
 }
 
 var ConfigData *Config
@@ -49,7 +50,7 @@ func (config *Config) GetDEBUG() bool {
 func (config *Config) GetDB() map[string]interface{} {
 	var aMap map[string]interface{}
 	aByte, _ := json.Marshal(*config.DB)
-	json.Unmarshal(aByte, &aMap)
+	_ = json.Unmarshal(aByte, &aMap)
 	return aMap
 }
 func (config *Config) GetRedis() map[string]interface{} {
@@ -91,12 +92,18 @@ func InitConfig() (*Config, error) {
 			Password: "123456",
 		},
 		Redis: &RedisConfig{},
-		QQMail: &QQMail{
+		MailQQ: &QQMail{
 			Token:    "",
 			Sender:   "767838865@qq.com",
 			Nickname: "aker",
 		},
+		Mail163: &QQMail{
+			Token:    "",
+			Sender:   "",
+			Nickname: "aker",
+		},
 	}
+	fmt.Println("$$$$@@@@@@@@@@")
 	var value string
 	if value = os.Getenv("DEBUG"); value != "" {
 		if b, err := strconv.ParseBool(value); err == nil {
@@ -147,16 +154,26 @@ func InitConfig() (*Config, error) {
 		}
 	}
 	if value = os.Getenv("QQ_MAIL_TOKEN"); value != "" {
-		config.QQMail.Token = value
+		config.MailQQ.Token = value
 	}
 	if value = os.Getenv("QQ_MAIL_SENDER"); value != "" {
-		config.QQMail.Sender = value
+		config.MailQQ.Sender = value
 	}
 	if value = os.Getenv("QQ_MAIL_NICKNAME"); value != "" {
-		config.QQMail.Nickname = value
+		config.MailQQ.Nickname = value
+	}
+	if value = os.Getenv("163_MAIL_TOKEN"); value != "" {
+		config.Mail163.Token = value
+	}
+	if value = os.Getenv("163_MAIL_SENDER"); value != "" {
+		config.Mail163.Sender = value
+	}
+	if value = os.Getenv("163_MAIL_NICKNAME"); value != "" {
+		config.Mail163.Nickname = value
 	}
 
 	ConfigData = config
-	fmt.Println("ConfigData:", ConfigData)
+	fmt.Println("ConfigData--:", ConfigData)
+	fmt.Println("ConfigData--mailQQ :", ConfigData.MailQQ)
 	return config, nil
 }

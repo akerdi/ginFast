@@ -7,15 +7,8 @@ import (
 
 var PublicRoutes = []*Route{
 	{
-		Path: "/api/aa",
-		Method: "POST",
-		Middles: []gin.HandlerFunc{
-			services.AA(),
-		},
-	},
-	{
 		Path: "/api/sendMail",
-		Method: "POST",
+		Method: "GET",
 		Middles: []gin.HandlerFunc{
 			services.SendMail(),
 		},
