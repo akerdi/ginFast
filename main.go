@@ -22,7 +22,19 @@ func main() {
 	config.InitConfig()
 	App = ginFastApp.New(config.ConfigData)
 	applyRoutes(App)
-	connectDB(App)
+	ch := make(chan error, 1)
+	go connectDBGenerator(App, ch)
+	err := <-ch
+	if err != nil {
+		panic(err)
+	}
+	ch = make(chan error, 1)
+	go connectRedisGenerator(App, ch)
+	<- ch
+	
+	engine, err := App.Start()
+	bindValidator()
+	startEngine(engine)
 }
 
 func testFunc() {
@@ -32,19 +44,24 @@ func testFunc() {
 	fmt.Printf("regexp:  %v \n\n", reg1.Match(b))
 }
 
-func connectDB(app *ginFastApp.App) {
+func connectDBGenerator(app *ginFastApp.App, ch chan<- error)  {
 	app.ConnectDB(func(db *gorm.DB, err error) {
 		if err != nil {
-			panic(err)
+			ch<- err
+			return
 		}
 		err = ginFastDB.SetupTables(db)
 		if err != nil {
-			panic(err)
+			ch<- err
+			return
 		}
-
-		engine, err := app.Start()
-		bindValidator()
-		startEngine(engine)
+		ch<- nil
+	})
+}
+func connectRedisGenerator(app *ginFastApp.App, ch chan<- error) {
+	app.ConnectRedis(func(redisClient *ginFastApp.RedisClient, err error) {
+		ginFastDB.SetupRedis(redisClient)
+		ch<- nil
 	})
 }
 

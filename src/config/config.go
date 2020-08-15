@@ -84,14 +84,8 @@ func InitConfig() (*Config, error) {
 		DEBUG: false,
 		Port:  10000,
 		Host:  "",
-		DB: &DBConfig{
-			Name:     "novel",
-			Host:     "127.0.0.1",
-			Port:     3306,
-			Username: "root",
-			Password: "123456",
-		},
-		Redis: &RedisConfig{},
+		DB: &db,
+		Redis: &redis,
 		MailQQ: &QQMail{
 			Token:    "",
 			Sender:   "767838865@qq.com",
@@ -173,7 +167,7 @@ func InitConfig() (*Config, error) {
 	}
 
 	ConfigData = config
-	fmt.Println("ConfigData--:", ConfigData)
+	fmt.Println("ConfigData--:", ConfigData.Redis)
 	fmt.Println("ConfigData--mailQQ :", ConfigData.MailQQ)
 	return config, nil
 }
