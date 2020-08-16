@@ -20,3 +20,11 @@ var RedisConnect *ginFastApp.RedisClient
 func SetupRedis(redisConnect *ginFastApp.RedisClient)  {
 	RedisConnect = redisConnect
 }
+
+func RedisGetRangeByKey(key string, left, right int64) ([]string, error) {
+	if right == 0 {
+		right = 10
+	}
+	results, err := RedisConnect.GetClient().LRange(key, left, right).Result()
+	return results, err
+}

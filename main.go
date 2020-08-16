@@ -6,10 +6,11 @@ import (
 	ginFastDB "ginFast/src/db"
 	"ginFast/src/routes"
 	customValidate "ginFast/src/routes/validate"
+	"ginFast/src/services"
 	"github.com/gin-gonic/gin/binding"
 	"log"
 	"regexp"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/shaohung001/ginFastApp"
@@ -35,6 +36,7 @@ func main() {
 	engine, err := App.Start()
 	bindValidator()
 	startEngine(engine)
+	services.ReadNginxAccessLogInRedis()
 }
 
 func testFunc() {

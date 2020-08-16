@@ -2,12 +2,15 @@ package services
 
 import (
 	"fmt"
+	"ginFast/src/db"
 	"ginFast/src/lib/mail"
 	"ginFast/src/routes/validate/email"
 	"github.com/gin-gonic/gin"
+	jsoniter "github.com/json-iterator/go"
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -54,5 +57,44 @@ func SendMail() gin.HandlerFunc  {
 			//}
 		}
 		context.JSON(http.StatusOK, emailData)
+	}
+}
+
+type ResultObject struct {
+	Timestamp string `json:"@timestamp"`
+	Message string `json:"message"`
+}
+
+func ReadNginxAccessLogInRedis() {
+	resultJson, err := db.RedisGetRangeByKey("filebeat:nginx:accesslog", 0, 100)
+	if err != nil {
+		panic(err)
+	}
+	
+	var resObjects []ResultObject
+	for _, str := range resultJson {
+		var resObject ResultObject
+		err = jsoniter.Unmarshal([]byte(str), &resObject)
+		if err != nil {
+			panic(err)
+		}
+		resObjects = append(resObjects, resObject)
+	}
+	
+	
+	exec(resObjects)
+}
+
+func exec(resObjects []ResultObject)  {
+	for _, resObject := range resObjects {
+		message := resObject.Message
+		messageSplitArray := strings.Split(message, " - - ")
+		ip := messageSplitArray[0]
+		msg := messageSplitArray[1]
+		isVPNMsg, _ := regexp.MatchString("/58ff4ec7/", msg)
+		if isVPNMsg == true {
+			continue
+		}
+		fmt.Println("222222==== ", ip, "     ip]]] [[[[msg: ", msg)
 	}
 }

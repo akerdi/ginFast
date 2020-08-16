@@ -97,7 +97,6 @@ func InitConfig() (*Config, error) {
 			Nickname: "aker",
 		},
 	}
-	fmt.Println("$$$$@@@@@@@@@@")
 	var value string
 	if value = os.Getenv("DEBUG"); value != "" {
 		if b, err := strconv.ParseBool(value); err == nil {
