@@ -28,12 +28,14 @@ type QQMail struct {
 }
 type Config struct {
 	DEBUG  bool
+	IP     string // 服务器ip 信息
 	Port   int
 	Host   string
 	DB     *DBConfig
 	Redis  *RedisConfig
 	MailQQ *QQMail
 	Mail163 *QQMail
+	FilterPattern []string
 }
 
 var ConfigData *Config
@@ -82,6 +84,7 @@ func InitConfig() (*Config, error) {
 	fmt.Printf("db: %v  redis: %v", db, redis)
 	config := &Config{
 		DEBUG: false,
+		IP: "127.0.0.1",
 		Port:  10000,
 		Host:  "",
 		DB: &db,
@@ -96,12 +99,16 @@ func InitConfig() (*Config, error) {
 			Sender:   "",
 			Nickname: "aker",
 		},
+		FilterPattern: []string{"/58ff4ec7/",},
 	}
 	var value string
 	if value = os.Getenv("DEBUG"); value != "" {
 		if b, err := strconv.ParseBool(value); err == nil {
 			config.DEBUG = b
 		}
+	}
+	if value = os.Getenv("IP"); value != "" {
+		config.IP = value
 	}
 	if value = os.Getenv("HOST"); value != "" {
 		config.Host = value

@@ -13,4 +13,11 @@ var PublicRoutes = []*Route{
 			services.SendMail(),
 		},
 	},
+	{
+		Path: "/api/startFilebeat",
+		Method: "GET",
+		Middles: []gin.HandlerFunc{
+			services.StartFilebeatRecenteUris(),
+		},
+	},
 }

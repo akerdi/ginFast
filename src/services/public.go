@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"ginFast/src/config"
 	"ginFast/src/db"
 	"ginFast/src/lib/mail"
 	"ginFast/src/routes/validate/email"
@@ -60,13 +61,44 @@ func SendMail() gin.HandlerFunc  {
 	}
 }
 
+func StartFilebeatRecenteUris() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		ReadNginxAccessLogInRedis()
+		context.JSON(http.StatusOK, gin.H{
+			"success": true,
+		})
+	}
+}
+
 type ResultObject struct {
 	Timestamp string `json:"@timestamp"`
 	Message string `json:"message"`
 }
 
+var (
+	theTargetPattern []string = []string{
+		"/webfig/",
+		"/wp-login.php/",
+		"robots.txt/",
+		"/api/jsonws/invoke",
+		"/?XDEBUG_SESSION_START=phpstorm",
+		"/invokefunction",
+		"/.env/",
+		"/cgi-bin/config.exp",
+		"/boaform/admin/formLogin",
+		"/index.php",
+		// more to add
+	}
+	// 最多一个任务在进行当中
+	readNginxAccessLogTaskIsProcessing = false
+)
+
 func ReadNginxAccessLogInRedis() {
-	resultJson, err := db.RedisGetRangeByKey("filebeat:nginx:accesslog", 0, 100)
+	if readNginxAccessLogTaskIsProcessing == true {
+		return
+	}
+	readNginxAccessLogTaskIsProcessing = true
+	resultJson, err := db.RedisGetRangeByKey("filebeat:nginx:accesslog", 0, 5000)
 	if err != nil {
 		panic(err)
 	}
@@ -80,21 +112,47 @@ func ReadNginxAccessLogInRedis() {
 		}
 		resObjects = append(resObjects, resObject)
 	}
-	
-	
-	exec(resObjects)
+	execResultObject(resObjects)
 }
 
-func exec(resObjects []ResultObject)  {
+func execResultObject(resObjects []ResultObject)  {
 	for _, resObject := range resObjects {
 		message := resObject.Message
 		messageSplitArray := strings.Split(message, " - - ")
+		if len(messageSplitArray) != 2 {
+			fmt.Println("获取到的链接分割成的数目不为2！！！")
+			break
+		}
 		ip := messageSplitArray[0]
 		msg := messageSplitArray[1]
-		isVPNMsg, _ := regexp.MatchString("/58ff4ec7/", msg)
-		if isVPNMsg == true {
+		shouldBreakOuter := false
+		for _, filterPattern := range config.ConfigData.FilterPattern {
+			isFilterMsg, _ := regexp.MatchString(filterPattern, msg)
+			if isFilterMsg == true {
+				shouldBreakOuter = true
+				break
+			}
+		}
+		if shouldBreakOuter == true {
 			continue
 		}
-		fmt.Println("222222==== ", ip, "     ip]]] [[[[msg: ", msg)
+		for _, targetPattern := range theTargetPattern {
+			isTargetMsg, _ := regexp.MatchString(targetPattern, msg)
+			if isTargetMsg {
+				// 调用外部拦截设备
+				fmt.Printf("====== block the fucking ip: %s, because reason: %s \n\n", ip, msg)
+				go func() {
+					res, err := http.Get(fmt.Sprintf("http://%s:9111/api/block/%s/%s", config.ConfigData.IP, "hash:"+ip, ip))
+					fmt.Println("res: ", res, " ]]]] err:: [[[ ", err)
+				}()
+				
+				shouldBreakOuter = true
+				break
+			}
+		}
+		if shouldBreakOuter == true {
+			continue
+		}
 	}
+	readNginxAccessLogTaskIsProcessing = false
 }

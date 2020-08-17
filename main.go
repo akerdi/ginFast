@@ -6,11 +6,10 @@ import (
 	ginFastDB "ginFast/src/db"
 	"ginFast/src/routes"
 	customValidate "ginFast/src/routes/validate"
-	"ginFast/src/services"
 	"github.com/gin-gonic/gin/binding"
 	"log"
 	"regexp"
-	
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/shaohung001/ginFastApp"
@@ -31,12 +30,11 @@ func main() {
 	}
 	ch = make(chan error, 1)
 	go connectRedisGenerator(App, ch)
-	<- ch
-	
+	<-ch
+
 	engine, err := App.Start()
 	bindValidator()
 	startEngine(engine)
-	services.ReadNginxAccessLogInRedis()
 }
 
 func testFunc() {
@@ -46,24 +44,24 @@ func testFunc() {
 	fmt.Printf("regexp:  %v \n\n", reg1.Match(b))
 }
 
-func connectDBGenerator(app *ginFastApp.App, ch chan<- error)  {
+func connectDBGenerator(app *ginFastApp.App, ch chan<- error) {
 	app.ConnectDB(func(db *gorm.DB, err error) {
 		if err != nil {
-			ch<- err
+			ch <- err
 			return
 		}
 		err = ginFastDB.SetupTables(db)
 		if err != nil {
-			ch<- err
+			ch <- err
 			return
 		}
-		ch<- nil
+		ch <- nil
 	})
 }
 func connectRedisGenerator(app *ginFastApp.App, ch chan<- error) {
 	app.ConnectRedis(func(redisClient *ginFastApp.RedisClient, err error) {
 		ginFastDB.SetupRedis(redisClient)
-		ch<- nil
+		ch <- nil
 	})
 }
 
