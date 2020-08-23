@@ -14,7 +14,7 @@ var PublicRoutes = []*Route{
 		},
 	},
 	{
-		Path: "/api/startFilebeat",
+		Path: "/api/startFilebeat", // TODO 增加限流方案
 		Method: "GET",
 		Middles: []gin.HandlerFunc{
 			services.StartFilebeatRecenteUris(),

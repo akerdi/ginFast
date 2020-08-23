@@ -29,6 +29,7 @@ type QQMail struct {
 type Config struct {
 	DEBUG  bool
 	IP     string // 服务器ip 信息
+	Token  string // 服务器简易识别令牌
 	Port   int
 	Host   string
 	DB     *DBConfig
@@ -85,6 +86,7 @@ func InitConfig() (*Config, error) {
 	config := &Config{
 		DEBUG: false,
 		IP: "127.0.0.1",
+		Token: "admin",
 		Port:  10000,
 		Host:  "",
 		DB: &db,
@@ -109,6 +111,9 @@ func InitConfig() (*Config, error) {
 	}
 	if value = os.Getenv("IP"); value != "" {
 		config.IP = value
+	}
+	if value = os.Getenv("TOKEN"); value != "" {
+		config.Token = value
 	}
 	if value = os.Getenv("HOST"); value != "" {
 		config.Host = value

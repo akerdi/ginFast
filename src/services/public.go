@@ -8,6 +8,7 @@ import (
 	"ginFast/src/routes/validate/email"
 	"github.com/gin-gonic/gin"
 	jsoniter "github.com/json-iterator/go"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -63,6 +64,14 @@ func SendMail() gin.HandlerFunc  {
 
 func StartFilebeatRecenteUris() gin.HandlerFunc {
 	return func(context *gin.Context) {
+		token := context.Query("token")
+		if token != config.ConfigData.Token {
+			context.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"msg": "时间不对", // 给出不对原因(错误误导原因, 防止被攻击)
+			})
+			return
+		}
 		ReadNginxAccessLogInRedis()
 		context.JSON(http.StatusOK, gin.H{
 			"success": true,
@@ -76,7 +85,7 @@ type ResultObject struct {
 }
 
 var (
-	theTargetPattern []string = []string{
+	theTargetPattern = []string{
 		"/webfig/",
 		"/wp-login.php/",
 		"robots.txt/",
@@ -125,15 +134,15 @@ func execResultObject(resObjects []ResultObject)  {
 		}
 		ip := messageSplitArray[0]
 		msg := messageSplitArray[1]
-		shouldBreakOuter := false
+		shouldContinueOuter := false
 		for _, filterPattern := range config.ConfigData.FilterPattern {
 			isFilterMsg, _ := regexp.MatchString(filterPattern, msg)
 			if isFilterMsg == true {
-				shouldBreakOuter = true
+				shouldContinueOuter = true
 				break
 			}
 		}
-		if shouldBreakOuter == true {
+		if shouldContinueOuter == true {
 			continue
 		}
 		for _, targetPattern := range theTargetPattern {
@@ -143,14 +152,22 @@ func execResultObject(resObjects []ResultObject)  {
 				fmt.Printf("====== block the fucking ip: %s, because reason: %s \n\n", ip, msg)
 				go func() {
 					res, err := http.Get(fmt.Sprintf("http://%s:9111/api/block/%s/%s", config.ConfigData.IP, "hash:"+ip, ip))
-					fmt.Println("res: ", res, " ]]]] err:: [[[ ", err)
+					if err != nil {
+						fmt.Println("发送消息至 localhost:9111/api/block 出错了 err: ", err)
+						return
+					}
+					body, err := ioutil.ReadAll(res.Body)
+					if err != nil {
+						fmt.Println("ioutil.ReadAll err: ", err)
+						return
+					}
+					fmt.Printf("发送消息至 localhost:9111/api/block 状态 %d %v \n", res.StatusCode, string(body))
 				}()
-				
-				shouldBreakOuter = true
+				shouldContinueOuter = true
 				break
 			}
 		}
-		if shouldBreakOuter == true {
+		if shouldContinueOuter == true {
 			continue
 		}
 	}

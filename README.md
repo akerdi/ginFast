@@ -64,6 +64,18 @@ config.InitConfig() // 载入config
 config.ConfigData // 读出config
 ```
 
+### 功能
+
+1. 发送邮件
+
+
+        curl https://localhost:10000/api/sendMail\?email\=1184881032@qq.com\&msg\=猴子\&subject\=晚上吃什么
+        
+2. Block ip 规则
+
+配合 `git@github.com:shaohung001/blockip.git` 食用
+
+        curl http://localhost:10000/api/startFilebeat\?token\=admin
 # 欢迎Issue 和Pull request
 
 您有需求，可以fork 然后pull request。本人最近在忙，也尽量会抽空出来。
